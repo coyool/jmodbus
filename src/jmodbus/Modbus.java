@@ -37,15 +37,15 @@ public class Modbus {
     public String ejecutarPeticion(){
         String respuesta = "";
         /* Armamos la trama de acuerdo a la función */
-        int[] trama = armarTrama(this.functionNumber);
+        List<Integer> trama = armarTrama(this.functionNumber);
         
         /* Enviar la petición */
                 
         return respuesta;
     }
 
-    private int[] armarTrama(int functionNumber) {
-        int[] trama = null;
+    private List<Integer> armarTrama(int functionNumber) {
+        List<Integer> trama = null;
         switch (functionNumber) {
             case 3:
                 trama = armarTramaFunction3();
@@ -56,25 +56,38 @@ public class Modbus {
             case 16:
                 trama = armarTramaFunction16();
                 break;
-        }
-
+        }       
+        
         return trama;
     }
 
-    private int[] armarTramaFunction3() {
+    private List<Integer> armarTramaFunction3() {
         List<Integer> trama = new ArrayList<Integer>();
               
-        /* 1 byte: ID del dispositivo */
+        /* #1: (1 byte) ID del dispositivo 0..255 */
         trama.add(prepareByte(this.id));
-               
+        
+        /* #2: (1 byte) numero de funcion 0..255 */
+        trama.add(this.functionNumber);
+        
+        /* #3: (2 byte) direccion de inicio de lectura (0..255)(0..255) */
+        trama.add(this.address / 256);
+        trama.add(this.address % 256);
+        
+        /* #4: (2 byte) cantidad de variables (0..255)(0..255) */
+        trama.add(this.nvar / 256);
+        trama.add(this.nvar % 256);
+        
+        /* #5: (2 byte) CRC (0..255)(0..255) */
+        
         return trama;
     }
 
-    private int[] armarTramaFunction6() {
+    private List<Integer> armarTramaFunction6() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private int[] armarTramaFunction16() {
+    private List<Integer> armarTramaFunction16() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
