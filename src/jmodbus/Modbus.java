@@ -22,6 +22,7 @@ public class Modbus {
     private int address;
     private int nvar;
     private int functionNumber;
+    private CRC16 crc16;
 
     public Modbus(String port, int rate, int timeout, int retries, String id, int address, int nvar, int functionNumber) {
         this.port = port;
@@ -32,6 +33,7 @@ public class Modbus {
         this.address = address;
         this.nvar = nvar;
         this.functionNumber = functionNumber;
+        this.crc16 = new CRC16();
     }    
         
     public String ejecutarPeticion(){
@@ -83,8 +85,26 @@ public class Modbus {
         return trama;
     }
 
-    private List<Integer> armarTramaFunction6() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private Byte [] armarTramaFunction6(int valor) {
+        List<Byte> trama = new ArrayList<>();
+              
+        /* #1: (1 byte) ID del dispositivo 0..64 */
+        trama.add(prepararByte(this.id));
+        
+        /* #2: (1 byte) numero de funcion 0..255 */
+        trama.add((byte)functionNumber);
+        
+        /* #3: (2 byte) direccion de inicio de lectura (0..255)(0..255) */
+        trama.add((byte)(address / 256));
+        trama.add((byte)(address % 256));
+        
+        /* #4: (2 byte) cantidad de variables (0..255)(0..255) */
+        trama.add((byte)(valor / 256));
+        trama.add((byte)(valor % 256));
+        
+        Byte[] tramaEnviar = crc16.calcularCrc16(trama);
+        
+        return tramaEnviar;
     }
 
     private List<Integer> armarTramaFunction16() {
@@ -94,5 +114,12 @@ public class Modbus {
     private int prepareByte(String byteString){
         /* Esta funcion recibe un string y lo devuelve como un byte en int */
         return Integer.parseInt(byteString);
+    }
+    
+    private byte prepararByte(String byteString){
+        byte retorno;
+        int valor = Integer.valueOf(byteString);
+        retorno = (byte) valor;
+        return retorno;
     }
 }
