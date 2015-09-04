@@ -21,6 +21,7 @@ public class Modbus {
     private String id;
     private int address;
     private int nvar;
+    private int[] valores;
     private int functionNumber;
     private CRC16 crc16;
 
@@ -36,11 +37,13 @@ public class Modbus {
         this.crc16 = new CRC16();
     }
 
-    public String ejecutarPeticion() {       
-        
+    public String ejecutarPeticion(int[] valores) {
         String respuesta = "";
+        this.valores = valores;
+        
         /* Armamos la trama de acuerdo a la función */        
         byte[] trama = armarTrama(this.functionNumber);
+
         /* Enviar la petición */
         SerialModbus jmodbus = new SerialModbus(this.port);            
         
@@ -58,12 +61,14 @@ public class Modbus {
                 trama = armarTramaFunction3();
                 break;
             case 6:
+                trama = armarTramaFunction6(valores[0]);
+                break;
+            case 16:
+                trama = armarTramaFunction16(valores);
                 int valor = 0;
                 //trama = armarTramaFunction6(valor);
                 break;
-            case 16:
                 //trama = armarTramaFunction16();
-                break;
         }
 
         return trama;
