@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
   </Properties>
@@ -367,7 +367,7 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="btnStart" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="stopButton" min="-2" max="-2" attributes="0"/>
+                                      <Component id="btnStop" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <Component id="jLabel12" max="32767" attributes="0"/>
                               </Group>
@@ -404,7 +404,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="btnStart" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="stopButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnStop" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="btnSend" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="cbxOpcionVisualizacion" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -436,7 +436,7 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
               <SubComponents>
-                <Component class="javax.swing.JTextArea" name="jTextArea1">
+                <Component class="javax.swing.JTextArea" name="txAreaTraffic">
                   <Properties>
                     <Property name="columns" type="int" value="20"/>
                     <Property name="rows" type="int" value="5"/>
@@ -448,11 +448,17 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Start"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnStartActionPerformed"/>
+              </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="stopButton">
+            <Component class="javax.swing.JButton" name="btnStop">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Stop"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnStopActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="btnSend">
               <Properties>
