@@ -61,9 +61,9 @@ public class Config extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        txAreaTraffic = new javax.swing.JTextArea();
         btnStart = new javax.swing.JButton();
-        stopButton = new javax.swing.JButton();
+        btnStop = new javax.swing.JButton();
         btnSend = new javax.swing.JButton();
         cbxOpcionVisualizacion = new javax.swing.JComboBox();
         jLabel12 = new javax.swing.JLabel();
@@ -218,13 +218,23 @@ public class Config extends javax.swing.JFrame {
 
         jLabel10.setText("Tráfico");
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        txAreaTraffic.setColumns(20);
+        txAreaTraffic.setRows(5);
+        jScrollPane1.setViewportView(txAreaTraffic);
 
         btnStart.setText("Start");
+        btnStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStartActionPerformed(evt);
+            }
+        });
 
-        stopButton.setText("Stop");
+        btnStop.setText("Stop");
+        btnStop.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStopActionPerformed(evt);
+            }
+        });
 
         btnSend.setText("Enviar petición");
         btnSend.addActionListener(new java.awt.event.ActionListener() {
@@ -277,7 +287,7 @@ public class Config extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnStart)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(stopButton))
+                                .addComponent(btnStop))
                             .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -305,7 +315,7 @@ public class Config extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnStart)
-                    .addComponent(stopButton)
+                    .addComponent(btnStop)
                     .addComponent(btnSend)
                     .addComponent(cbxOpcionVisualizacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -372,6 +382,33 @@ public class Config extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_comboFuncionActionPerformed
 
+    private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
+        if(this.modbus != null){
+            this.modbus.closeSerialPort();
+        }
+        this.modbus = new Modbus("COM2", 9600, 30, 3, "1", 0, 10, 3);  
+        
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                long endTimeMillis = System.currentTimeMillis() + 1500;
+                while(true){
+                    if (System.currentTimeMillis() > endTimeMillis) {
+                        String tramaRecibida = modbus.execute(null);
+                        txAreaTraffic.setText(tramaRecibida + "\n" + txAreaTraffic.getText());
+                        endTimeMillis = System.currentTimeMillis() + 1500;
+                    }
+                }
+            }
+        });
+        thread.start();        
+    }//GEN-LAST:event_btnStartActionPerformed
+
+    private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnStopActionPerformed
+
+
     /**
      * @param args the command line arguments
      */
@@ -410,6 +447,7 @@ public class Config extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSend;
     private javax.swing.JButton btnStart;
+    private javax.swing.JButton btnStop;
     private javax.swing.JComboBox cbxOpcionVisualizacion;
     private javax.swing.JComboBox comboFuncion;
     private javax.swing.JComboBox comboPuerto;
@@ -439,15 +477,16 @@ public class Config extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JButton stopButton;
     private javax.swing.JTable tablaValores;
     private javax.swing.JTextField textDireccion;
     private javax.swing.JTextField textID;
+    private javax.swing.JTextArea txAreaTraffic;
     private javax.swing.JTextArea txtAreaUltimaConfiguracion;
     private javax.swing.JTextArea txtAreaUltimoDispositivo;
     // End of variables declaration//GEN-END:variables
-
+    
+    private Modbus modbus;
+    
     private void init() {
         PortConfiguration portConfiguration = new PortConfiguration();
         Collection ports = portConfiguration.buscarDispositivos();

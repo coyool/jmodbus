@@ -24,6 +24,7 @@ public class Modbus {
     private int[] valores;
     private int functionNumber;
     private CRC16 crc16;
+    private SerialModbus jSerialModbus;
 
     public Modbus(String port, int rate, int timeout, int retries, String id, int address, int nvar, int functionNumber) {
         this.port = port;
@@ -36,7 +37,11 @@ public class Modbus {
         this.functionNumber = functionNumber;
         this.crc16 = new CRC16();
     }
-
+    
+    public void closeSerialPort(){
+        this.jSerialModbus.close();
+    }
+    
     public String ejecutarPeticion(int[] valores) {
         String respuesta = "";
         this.valores = valores;
@@ -45,11 +50,26 @@ public class Modbus {
         byte[] trama = armarTrama(this.functionNumber);
 
         /* Enviar la petición */
-        SerialModbus jmodbus = new SerialModbus(this.port);            
+        this.jSerialModbus = new SerialModbus(this.port);            
+                
+        respuesta = jSerialModbus.execute(trama, 24);
         
-        jmodbus.enviar(trama, 24);
+        return respuesta;
+    }
+    
+    public String execute(int[] valores) {
+        String respuesta = "";
+        this.valores = valores;
         
-        jmodbus.start();   
+        /* Armamos la trama de acuerdo a la función */        
+        byte[] trama = armarTrama(this.functionNumber);
+
+        /* Enviar la petición */
+        if(this.jSerialModbus == null){
+            this.jSerialModbus = new SerialModbus(this.port); 
+        }                  
+                
+        respuesta = jSerialModbus.execute(trama, 24);
         
         return respuesta;
     }
