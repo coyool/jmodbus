@@ -5,6 +5,9 @@
  */
 package main;
 
+import jmodbus.Modbus;
+import jmodbus.SerialModbus;
+
 /**
  *
  * @author LUCAS
@@ -16,6 +19,8 @@ public class Main {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        Modbus modbus = new Modbus("COM2", 9600, 30, 3, "1", 0, 10, 3);        
+        modbus.ejecutarPeticion();
     }
     
 }

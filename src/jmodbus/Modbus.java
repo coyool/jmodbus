@@ -39,53 +39,60 @@ public class Modbus {
     public String ejecutarPeticion(){
         String respuesta = "";
         /* Armamos la trama de acuerdo a la función */
-        List<Integer> trama = armarTrama(this.functionNumber);
-        
+        byte[] trama = armarTrama(this.functionNumber);
         /* Enviar la petición */
-                
+        SerialModbus jmodbus = new SerialModbus(this.port);
+        //jmodbus.start();        
+        jmodbus.enviar(trama);
+        
+        jmodbus.start();
         return respuesta;
     }
 
-    private List<Integer> armarTrama(int functionNumber) {
-        List<Integer> trama = null;
+    private byte[] armarTrama(int functionNumber) {
+        byte[] trama = null;
         switch (functionNumber) {
             case 3:
                 trama = armarTramaFunction3();
                 break;
             case 6:
-                trama = armarTramaFunction6();
+                int valor = 0;
+                //trama = armarTramaFunction6(valor);
                 break;
             case 16:
-                trama = armarTramaFunction16();
+                //trama = armarTramaFunction16();
                 break;
         }       
         
         return trama;
     }
 
-    private List<Integer> armarTramaFunction3() {
-        List<Integer> trama = new ArrayList<Integer>();
+    private byte[] armarTramaFunction3() {
+        List<Byte> trama = new ArrayList<>();
               
         /* #1: (1 byte) ID del dispositivo 0..255 */
-        trama.add(prepareByte(this.id));
+        trama.add(prepararByte(this.id));
         
         /* #2: (1 byte) numero de funcion 0..255 */
-        trama.add(this.functionNumber);
+        trama.add(new Byte((byte)this.functionNumber));
         
         /* #3: (2 byte) direccion de inicio de lectura (0..255)(0..255) */
-        trama.add(this.address / 256);
-        trama.add(this.address % 256);
+        trama.add(new Byte((byte)(this.address / 256)));
+        System.out.println((byte)(this.address / 256));
+        System.out.println((byte)(this.address % 256));
+        trama.add(new Byte((byte)(this.address % 256)));
         
         /* #4: (2 byte) cantidad de variables (0..255)(0..255) */
-        trama.add(this.nvar / 256);
-        trama.add(this.nvar % 256);
+        trama.add(new Byte((byte)(this.nvar / 256)));
+        trama.add(new Byte((byte)(this.nvar % 256)));
         
         /* #5: (2 byte) CRC (0..255)(0..255) */
+        byte[] tramaEnviar = crc16.calcularCrc16(trama);
         
-        return trama;
+        return tramaEnviar;
     }
 
-    private Byte [] armarTramaFunction6(int valor) {
+    private byte [] armarTramaFunction6(int valor) {
         List<Byte> trama = new ArrayList<>();
               
         /* #1: (1 byte) ID del dispositivo 0..64 */
@@ -102,18 +109,14 @@ public class Modbus {
         trama.add((byte)(valor / 256));
         trama.add((byte)(valor % 256));
         
-        Byte[] tramaEnviar = crc16.calcularCrc16(trama);
+        /* #5: (2 byte) CRC (0..255)(0..255) */
+        byte[] tramaEnviar = crc16.calcularCrc16(trama);
         
         return tramaEnviar;
     }
 
     private List<Integer> armarTramaFunction16() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    private int prepareByte(String byteString){
-        /* Esta funcion recibe un string y lo devuelve como un byte en int */
-        return Integer.parseInt(byteString);
     }
     
     private byte prepararByte(String byteString){
