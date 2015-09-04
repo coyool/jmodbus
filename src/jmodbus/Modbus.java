@@ -36,16 +36,17 @@ public class Modbus {
         this.crc16 = new CRC16();
     }
 
-    public String ejecutarPeticion() {
+    public String ejecutarPeticion() {       
+        
         String respuesta = "";
         /* Armamos la trama de acuerdo a la función */        
         byte[] trama = armarTrama(this.functionNumber);
         /* Enviar la petición */
-        SerialModbus jmodbus = new SerialModbus(this.port);
-        //jmodbus.start();        
-        jmodbus.enviar(trama);
+        SerialModbus jmodbus = new SerialModbus(this.port);            
         
-        jmodbus.start();
+        jmodbus.enviar(trama, 24);
+        
+        jmodbus.start();   
         
         return respuesta;
     }
@@ -79,8 +80,6 @@ public class Modbus {
         
         /* #3: (2 byte) direccion de inicio de lectura (0..255)(0..255) */
         trama.add(new Byte((byte)(this.address / 256)));
-        System.out.println((byte)(this.address / 256));
-        System.out.println((byte)(this.address % 256));
         trama.add(new Byte((byte)(this.address % 256)));
         
         /* #4: (2 byte) cantidad de variables (0..255)(0..255) */

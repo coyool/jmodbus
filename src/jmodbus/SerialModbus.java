@@ -10,6 +10,7 @@ import gnu.io.SerialPort;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.logging.Level;
@@ -25,6 +26,8 @@ public class SerialModbus  extends Thread {
     private SerialPort serialPort;
     private InputStream inStream;
     private OutputStream outStream;
+    private int responseLength = 100;
+    private int deviseId = 0;
     
     public SerialModbus(String nombrePuerto) {
         CommPortIdentifier portId;
@@ -43,10 +46,15 @@ public class SerialModbus  extends Thread {
         }
     }
 
-    public void enviar(byte[] trama) {
+    public void enviar(byte[] trama, int responseLength) {
+        this.responseLength = responseLength;
         String tramaStr = "| ";
         for(int i = 0; i < trama.length; i++){
-            tramaStr += String.valueOf(new Byte(trama[i])) + " | ";
+            if(i==0){
+                this.deviseId = parseUnsignedInt(trama[i]);
+            }
+            int byteInt = parseUnsignedInt(trama[i]);
+            tramaStr += String.valueOf(byteInt) + " | ";
         }
         System.out.println("SECUENCIA A ENVIAR - - -> " + tramaStr);
         
@@ -61,29 +69,46 @@ public class SerialModbus  extends Thread {
         }
 
     }
+    
+    public int parseUnsignedInt(int toConvert){
+        byte b = (byte) toConvert;
+        return (b & 0xFF);
+    }
+    
+    public String toHex(String arg){
+        return String.format("%040x", new BigInteger(1, arg.getBytes()));
+    }
 
     @Override
     public void run() { //REPRESENTA AL RECIBIR!!!!!
         while (true) {
             try {
-                List<Byte> tramaRecibida = new ArrayList<Byte>();
                 System.out.println("RECIBE");
                 inStream = this.serialPort.getInputStream();
                 int bit = inStream.read();
                 boolean control = true;
-                boolean seg = false;
-                while (control) {
-                    tramaRecibida.add((byte) bit);
-                    if (true) {
+                String tramaStr = "| ";
+                String tramaHex = "| ";
+                String tramaBinary = "| ";
+                /* Se queda esperando a que la trama traiga el ID del dispositivo */
+                while(control){
+                    if(parseUnsignedInt(bit) == deviseId){
                         control = false;
-                        bit = inStream.read();                       
-                    }else{
-                        bit = inStream.read();
-                    }              
-                    
+                    }
+                    bit = inStream.read();
+                }
+                
+                /* Lee la trama completa */
+                for(int i = 0; i < responseLength; i++){
+                   int byteInt = parseUnsignedInt(bit);
+                   tramaStr += String.valueOf(byteInt) + " | ";
+                   tramaHex += Integer.toHexString(byteInt) + " | ";
+                   tramaBinary += Integer.toBinaryString(byteInt) + " | ";
+                   bit = inStream.read(); 
                 }   
-                System.out.println("Respuesta: " + tramaRecibida); 
-
+                System.out.println("Respuesta decimal: " + tramaStr); 
+                System.out.println("Respuesta hex: " + tramaHex); 
+                System.out.println("Respuesta binario: " + tramaBinary); 
             } catch (IOException ex) {
                 Logger.getLogger(SerialModbus.class.getName()).log(Level.SEVERE, null, ex);
             }
