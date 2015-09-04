@@ -54,9 +54,7 @@ public class Config extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         textDireccion = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
         comboVariables = new javax.swing.JComboBox();
-        comboFuncion = new javax.swing.JComboBox();
         jLabel11 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         txtAreaUltimoDispositivo = new javax.swing.JTextArea();
@@ -73,6 +71,8 @@ public class Config extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         tablaValores = new javax.swing.JTable();
         jLabel14 = new javax.swing.JLabel();
+        comboFuncion = new javax.swing.JComboBox();
+        jLabel9 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -157,16 +157,12 @@ public class Config extends javax.swing.JFrame {
 
         jLabel8.setText("N° Variables:");
 
-        jLabel9.setText("Funcion:");
-
         comboVariables.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "10", "20", "50", "100" }));
         comboVariables.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboVariablesActionPerformed(evt);
             }
         });
-
-        comboFuncion.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "3", "6", "16" }));
 
         jLabel11.setText("Última dispositivo");
 
@@ -185,10 +181,8 @@ public class Config extends javax.swing.JFrame {
                     .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(textDireccion)
                     .addComponent(jLabel8)
-                    .addComponent(jLabel9)
                     .addComponent(comboVariables, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(textID)
-                    .addComponent(comboFuncion, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(textID))
                 .addGap(27, 27, 27)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -205,7 +199,7 @@ public class Config extends javax.swing.JFrame {
                     .addComponent(jLabel6)
                     .addComponent(jLabel11))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(textID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -215,12 +209,8 @@ public class Config extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel8)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(comboVariables, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel9)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(comboFuncion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane3))
+                        .addComponent(comboVariables, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(188, Short.MAX_VALUE))
         );
 
@@ -264,6 +254,15 @@ public class Config extends javax.swing.JFrame {
 
         jLabel14.setText("Variables");
 
+        comboFuncion.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "3", "6", "16" }));
+        comboFuncion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboFuncionActionPerformed(evt);
+            }
+        });
+
+        jLabel9.setText("Funcion:");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -287,8 +286,10 @@ public class Config extends javax.swing.JFrame {
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                            .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
+                            .addComponent(comboFuncion, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane1)
                             .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
@@ -310,10 +311,15 @@ public class Config extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
-                    .addComponent(jLabel14))
+                    .addComponent(jLabel9))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(comboFuncion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -337,11 +343,11 @@ public class Config extends javax.swing.JFrame {
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
         // TODO add your handling code here:
         int[] valores = new int[tablaValores.getRowCount()];
-        Modbus modbus = new Modbus(comboPuerto.getSelectedItem().toString(), 
-                Integer.valueOf(comboRate.getSelectedItem().toString()), 
-                Integer.valueOf(comboTimeout.getSelectedItem().toString()), 
-                Integer.valueOf(comboReintentos.getSelectedItem().toString()), textID.getText(), 
-                Integer.valueOf(textDireccion.getText()), Integer.valueOf(comboVariables.getSelectedItem().toString()), 
+        Modbus modbus = new Modbus(comboPuerto.getSelectedItem().toString(),
+                Integer.valueOf(comboRate.getSelectedItem().toString()),
+                Integer.valueOf(comboTimeout.getSelectedItem().toString()),
+                Integer.valueOf(comboReintentos.getSelectedItem().toString()), textID.getText(),
+                Integer.valueOf(textDireccion.getText()), Integer.valueOf(comboVariables.getSelectedItem().toString()),
                 Integer.valueOf(comboFuncion.getSelectedItem().toString()));
         for (int i = 0; i < tablaValores.getRowCount(); i++) {
             valores[i] = (int) tablaValores.getValueAt(i, 1);
@@ -353,6 +359,18 @@ public class Config extends javax.swing.JFrame {
         // TODO add your handling code here:
         tablaValores.setModel(crearTabla(Integer.valueOf(comboVariables.getSelectedItem().toString())));
     }//GEN-LAST:event_comboVariablesActionPerformed
+
+    private void comboFuncionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboFuncionActionPerformed
+        // TODO add your handling code here:
+        if (comboFuncion.getSelectedItem().toString().equals("3")) {
+            tablaValores.setEnabled(false);
+        } else if (comboFuncion.getSelectedItem().toString().equals("6")) {
+            comboVariables.setSelectedIndex(0);
+            tablaValores.setEnabled(true);
+        } else {
+            tablaValores.setEnabled(true);
+        }
+    }//GEN-LAST:event_comboFuncionActionPerformed
 
     /**
      * @param args the command line arguments
