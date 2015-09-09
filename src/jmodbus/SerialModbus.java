@@ -69,58 +69,51 @@ public class SerialModbus extends Thread {
 
     }
 
-    public String execute(byte[] trama, int responseLength) {
+    public List<Integer> execute(byte[] trama, int responseLength) {
         this.responseLength = responseLength;
+        List<Integer> response = new ArrayList<Integer>();
+        
+        this.deviseId = parseUnsignedInt(trama[0]);
         String tramaStr = "| ";
         for (int i = 0; i < trama.length; i++) {
-            if (i == 0) {
-                this.deviseId = parseUnsignedInt(trama[i]);
-            }
             int byteInt = parseUnsignedInt(trama[i]);
             tramaStr += String.valueOf(byteInt) + " | ";
         }
-        System.out.println("ENVIAR - - -> " + tramaStr);
+        System.out.println("Tx: " + tramaStr);
 
         try {
             outStream = this.serialPort.getOutputStream();
             outStream.write(trama);
-            System.out.println("Trama enviada");
         } catch (IOException ex) {
             Logger.getLogger(SerialModbus.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         /* Espero la respuesta */
         try {
-            System.out.println("RECIBE");
             inStream = this.serialPort.getInputStream();
-            int bit = inStream.read();
+            int bit = -1;
             boolean control = true;
-            tramaStr = "| ";
-            String tramaHex = "| ";
-            String tramaBinary = "| ";
+            
             /* Se queda esperando a que la trama traiga el ID del dispositivo */
             while (control) {
-                if (parseUnsignedInt(bit) == deviseId) {
-                    control = false;
-                }
                 bit = inStream.read();
+                if (parseUnsignedInt(bit) == deviseId) {
+                    response.add(parseUnsignedInt(bit));
+                    control = false;
+                }                
             }
-
+            
             /* Lee la trama completa */
             for (int i = 0; i < responseLength; i++) {
-                int byteInt = parseUnsignedInt(bit);
-                tramaStr += String.valueOf(byteInt) + " | ";
-                tramaHex += Integer.toHexString(byteInt) + " | ";
-                tramaBinary += Integer.toBinaryString(byteInt) + " | ";
                 bit = inStream.read();
+                int byteInt = parseUnsignedInt(bit);
+                response.add(byteInt);               
             }
-            System.out.println("Respuesta decimal: " + tramaStr);
-            System.out.println("Respuesta hex: " + tramaHex);
-            System.out.println("Respuesta binario: " + tramaBinary);
+            
         } catch (IOException ex) {
             Logger.getLogger(SerialModbus.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return tramaStr;
+        return response;
     }
 
     public void close(){
@@ -142,7 +135,6 @@ public class SerialModbus extends Thread {
     public void run() { //REPRESENTA AL RECIBIR!!!!!
         while (true) {
             try {
-                System.out.println("RECIBE");
                 inStream = this.serialPort.getInputStream();
                 int bit = inStream.read();
                 boolean control = true;
@@ -165,9 +157,7 @@ public class SerialModbus extends Thread {
                     tramaBinary += Integer.toBinaryString(byteInt) + " | ";
                     bit = inStream.read();
                 }
-                System.out.println("Respuesta decimal: " + tramaStr);
-                System.out.println("Respuesta hex: " + tramaHex);
-                System.out.println("Respuesta binario: " + tramaBinary);
+                
             } catch (IOException ex) {
                 Logger.getLogger(SerialModbus.class.getName()).log(Level.SEVERE, null, ex);
             }

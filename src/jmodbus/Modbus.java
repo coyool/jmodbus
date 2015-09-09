@@ -25,6 +25,10 @@ public class Modbus {
     private int functionNumber;
     private CRC16 crc16;
     private SerialModbus jSerialModbus;
+    private byte[] trama;
+    public static final int DECIMAL = 0;
+    public static final int HEX = 1;
+    public static final int BINARY = 2;
 
     public Modbus(String port, int rate, int timeout, int retries, String id, int address, int nvar, int functionNumber) {
         this.port = port;
@@ -37,40 +41,43 @@ public class Modbus {
         this.functionNumber = functionNumber;
         this.crc16 = new CRC16();
     }
-    
-    public void closeSerialPort(){
+
+    public void closeSerialPort() {
         this.jSerialModbus.close();
     }
-    
+
     public String ejecutarPeticion(int[] valores) {
         String respuesta = "";
         this.valores = valores;
-        
-        /* Armamos la trama de acuerdo a la función */        
-        byte[] trama = armarTrama(this.functionNumber);
+
+        /* Armamos la trama de acuerdo a la función */
+        trama = armarTrama(this.functionNumber);
 
         /* Enviar la petición */
-        this.jSerialModbus = new SerialModbus(this.port);            
-                
-        respuesta = jSerialModbus.execute(trama, 24);
-        
+        this.jSerialModbus = new SerialModbus(this.port);
+
+        //respuesta = jSerialModbus.execute(trama, 24);
+
         return respuesta;
     }
-    
-    public String execute(int[] valores) {
+
+    public String execute(int[] valores, int format) {
         String respuesta = "";
+        List<Integer> response = null;
         this.valores = valores;
-        
-        /* Armamos la trama de acuerdo a la función */        
+
+        /* Armamos la trama de acuerdo a la función */
         byte[] trama = armarTrama(this.functionNumber);
 
         /* Enviar la petición */
-        if(this.jSerialModbus == null){
-            this.jSerialModbus = new SerialModbus(this.port); 
-        }                  
-                
-        respuesta = jSerialModbus.execute(trama, 24);
-        
+        if (this.jSerialModbus == null) {
+            this.jSerialModbus = new SerialModbus(this.port);
+        }
+
+        response = jSerialModbus.execute(trama, 24);
+
+        respuesta = toFormat(response, format);
+
         return respuesta;
     }
 
@@ -88,7 +95,7 @@ public class Modbus {
                 int valor = 0;
                 //trama = armarTramaFunction6(valor);
                 break;
-                //trama = armarTramaFunction16();
+            //trama = armarTramaFunction16();
         }
 
         return trama;
@@ -96,28 +103,28 @@ public class Modbus {
 
     private byte[] armarTramaFunction3() {
         List<Byte> trama = new ArrayList<>();
-              
+
         /* #1: (1 byte) ID del dispositivo 0..255 */
         trama.add(prepararByte(this.id));
-        
+
         /* #2: (1 byte) numero de funcion 0..255 */
-        trama.add(new Byte((byte)this.functionNumber));
-        
+        trama.add(new Byte((byte) this.functionNumber));
+
         /* #3: (2 byte) direccion de inicio de lectura (0..255)(0..255) */
-        trama.add(new Byte((byte)(this.address / 256)));
-        trama.add(new Byte((byte)(this.address % 256)));
-        
+        trama.add(new Byte((byte) (this.address / 256)));
+        trama.add(new Byte((byte) (this.address % 256)));
+
         /* #4: (2 byte) cantidad de variables (0..255)(0..255) */
-        trama.add(new Byte((byte)(this.nvar / 256)));
-        trama.add(new Byte((byte)(this.nvar % 256)));
-        
+        trama.add(new Byte((byte) (this.nvar / 256)));
+        trama.add(new Byte((byte) (this.nvar % 256)));
+
         /* #5: (2 byte) CRC (0..255)(0..255) */
         byte[] tramaEnviar = crc16.calcularCrc16(trama);
-        
+
         return tramaEnviar;
     }
 
-    private byte [] armarTramaFunction6(int valor) {
+    private byte[] armarTramaFunction6(int valor) {
         List<Byte> trama = new ArrayList<>();
 
         /* #1: (1 byte) ID del dispositivo 0..64 */
@@ -131,9 +138,9 @@ public class Modbus {
         trama.add((byte) (address % 256));
 
         /* #4: (2 byte) cantidad de variables (0..255)(0..255) */
-        trama.add((byte)(valor / 256));
-        trama.add((byte)(valor % 256));
-        
+        trama.add((byte) (valor / 256));
+        trama.add((byte) (valor % 256));
+
         /* #5: (2 byte) CRC (0..255)(0..255) */
         byte[] tramaEnviar = crc16.calcularCrc16(trama);
 
@@ -168,16 +175,38 @@ public class Modbus {
             trama.add((byte) (valor / 256));
             trama.add((byte) (valor % 256));
         }
-        
+
         byte[] tramaEnviar = crc16.calcularCrc16(trama);
 
         return tramaEnviar;
     }
-    
-    private byte prepararByte(String byteString){
+
+    private byte prepararByte(String byteString) {
         byte retorno;
         int valor = Integer.valueOf(byteString);
         retorno = (byte) valor;
         return retorno;
+    }
+
+    private String toFormat(List<Integer> response, int format) {
+        String respuesta = "";
+        switch (format) {
+            case 0:
+                for (Integer byteInt : response) {
+                    respuesta += "[" + byteInt.toString() + "]";
+                }
+                break;
+            case 1:
+                for (Integer byteInt : response) {
+                    respuesta += "[" + Integer.toHexString(byteInt) + "]";
+                }
+                break;
+            case 2:
+                for (Integer byteInt : response) {
+                    respuesta += "[" + Integer.toBinaryString(byteInt) + "]";
+                }
+                break;
+        }
+        return respuesta;
     }
 }
