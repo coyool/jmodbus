@@ -363,7 +363,11 @@ public class Config extends javax.swing.JFrame {
                 Integer.valueOf(comboFuncion.getSelectedItem().toString()));
         
         for (int i = 0; i < tablaValores.getRowCount(); i++) {
-            valores[i] = Integer.valueOf((String)tablaValores.getValueAt(i, 1));
+            try{
+                valores[i] = Integer.valueOf((String)tablaValores.getValueAt(i, 1));
+            }catch(ClassCastException e){
+                valores[i] = 0;
+            } 
         }
         
         String tramaRecibida = modbus.execute(valores, cbxOpcionVisualizacion.getSelectedIndex());
@@ -403,7 +407,11 @@ public class Config extends javax.swing.JFrame {
                 Integer.valueOf(comboFuncion.getSelectedItem().toString()));
         
         for (int i = 0; i < tablaValores.getRowCount(); i++) {
-            valores[i] = Integer.valueOf((String)tablaValores.getValueAt(i, 1));
+            try{
+                valores[i] = Integer.valueOf((String)tablaValores.getValueAt(i, 1));
+            }catch(ClassCastException e){
+                valores[i] = 0;
+            }            
         }
         
         thread = new Thread(new Runnable() {

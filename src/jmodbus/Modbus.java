@@ -75,8 +75,13 @@ public class Modbus {
         }
 
         response = jSerialModbus.execute(trama, 24);
-
-        respuesta = toFormat(response, format);
+        
+        if(checkFuntionCode(response)){
+            respuesta = toFormat(response, format);
+        }else{
+            respuesta = "Ocurrio un error \n" + errorMsg(response)+ "\n Rx: " + toFormat(response, format);
+        }
+        
 
         return respuesta;
     }
@@ -208,5 +213,26 @@ public class Modbus {
                 break;
         }
         return respuesta;
+    }
+
+    private boolean checkFuntionCode(List<Integer> response) {
+        if(response.get(1) >= 128) return false;
+        return true;
+    }
+
+    private String errorMsg(List<Integer> response) {
+        switch(response.get(2)){
+            case 1:
+                return "El código de funcion recibida no se corresponde a ningun comando disponible en el esclavo";
+            case 2:
+                return "En la trama no se corresponde ninguna dirección valida del esclavo";
+            case 3:
+                return "El valor enviado al esclavo no es valido";
+            case 6:
+                return "Dispositivo ocupado";
+            default:
+                return "Error desconocido";
+                
+        }
     }
 }
