@@ -17,7 +17,9 @@ import jmodbus.PortConfiguration;
  * @author LUCAS
  */
 public class Config extends javax.swing.JFrame {
-
+    
+    Thread thread;
+    
     /**
      * Creates new form Config
      */
@@ -351,9 +353,9 @@ public class Config extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
-        // TODO add your handling code here:
+        
         int[] valores = new int[tablaValores.getRowCount()];
-        Modbus modbus = new Modbus(comboPuerto.getSelectedItem().toString(),
+        this.modbus = new Modbus(comboPuerto.getSelectedItem().toString(),
                 Integer.valueOf(comboRate.getSelectedItem().toString()),
                 Integer.valueOf(comboTimeout.getSelectedItem().toString()),
                 Integer.valueOf(comboReintentos.getSelectedItem().toString()), textID.getText(),
@@ -361,16 +363,13 @@ public class Config extends javax.swing.JFrame {
                 Integer.valueOf(comboFuncion.getSelectedItem().toString()));
         
         for (int i = 0; i < tablaValores.getRowCount(); i++) {
-            valores[i] = (int) tablaValores.getValueAt(i, 1);
+            valores[i] = Integer.valueOf((String)tablaValores.getValueAt(i, 1));
         }
         
-        long endTimeMillis = System.currentTimeMillis() + 1500;
-        if (System.currentTimeMillis() > endTimeMillis) {
-            String tramaRecibida = modbus.execute(valores);
-            txAreaTraffic.setText(tramaRecibida + "\n" + txAreaTraffic.getText());
-            endTimeMillis = System.currentTimeMillis() + 1500;
-        }
-        //modbus.ejecutarPeticion(valores);//DEBE RECIBIR EL ARREGLO DE VALORES
+        String tramaRecibida = modbus.execute(valores, cbxOpcionVisualizacion.getSelectedIndex());
+        txAreaTraffic.setText(tramaRecibida + "\n" + txAreaTraffic.getText());
+        
+        this.modbus.closeSerialPort();
     }//GEN-LAST:event_btnSendActionPerformed
 
     private void comboVariablesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboVariablesActionPerformed
@@ -404,17 +403,17 @@ public class Config extends javax.swing.JFrame {
                 Integer.valueOf(comboFuncion.getSelectedItem().toString()));
         
         for (int i = 0; i < tablaValores.getRowCount(); i++) {
-            valores[i] = (int) tablaValores.getValueAt(i, 1);
+            valores[i] = Integer.valueOf((String)tablaValores.getValueAt(i, 1));
         }
         
-        Thread thread = new Thread(new Runnable() {
+        thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 long endTimeMillis = System.currentTimeMillis() + 1500;
                 while (true) {
                     if (System.currentTimeMillis() > endTimeMillis) {
                         //String tramaRecibida = modbus.execute(null);
-                        String tramaRecibida = modbus.execute(valores);
+                        String tramaRecibida = modbus.execute(valores, cbxOpcionVisualizacion.getSelectedIndex());
                         txAreaTraffic.setText(tramaRecibida + "\n" + txAreaTraffic.getText());
                         endTimeMillis = System.currentTimeMillis() + 1500;
                     }
@@ -425,7 +424,12 @@ public class Config extends javax.swing.JFrame {
     }//GEN-LAST:event_btnStartActionPerformed
 
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
-        // TODO add your handling code here:
+        if (this.thread != null) {
+            this.thread.stop();
+            if (this.modbus != null) {
+                this.modbus.closeSerialPort();
+            }
+        }
     }//GEN-LAST:event_btnStopActionPerformed
 
     /**

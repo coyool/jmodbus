@@ -104,10 +104,11 @@ public class SerialModbus extends Thread {
             }
             
             /* Lee la trama completa */
-            for (int i = 0; i < responseLength; i++) {
-                bit = inStream.read();
-                int byteInt = parseUnsignedInt(bit);
-                response.add(byteInt);               
+            while(true){
+               bit = inStream.read();
+               if(bit == -1) break;
+               int byteInt = parseUnsignedInt(bit);
+               response.add(byteInt); 
             }
             
         } catch (IOException ex) {
