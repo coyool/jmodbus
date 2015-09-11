@@ -371,7 +371,7 @@ public class Config extends javax.swing.JFrame {
         }
         
         String tramaRecibida = modbus.execute(valores, cbxOpcionVisualizacion.getSelectedIndex());
-        txAreaTraffic.setText(tramaRecibida + "\n" + txAreaTraffic.getText());
+        txAreaTraffic.setText(tramaRecibida + " \n" + txAreaTraffic.getText());
         
         this.modbus.closeSerialPort();
     }//GEN-LAST:event_btnSendActionPerformed

@@ -29,7 +29,8 @@ public class Modbus {
     public static final int DECIMAL = 0;
     public static final int HEX = 1;
     public static final int BINARY = 2;
-
+    private List<Integer> response = null;
+        
     public Modbus(String port, int rate, int timeout, int retries, String id, int address, int nvar, int functionNumber) {
         this.port = port;
         this.rate = rate;
@@ -63,25 +64,54 @@ public class Modbus {
 
     public String execute(int[] valores, int format) {
         String respuesta = "";
-        List<Integer> response = null;
+        response = null;
+        int retries = this.retries;
         this.valores = valores;
 
         /* Armamos la trama de acuerdo a la función */
-        byte[] trama = armarTrama(this.functionNumber);
+        trama = armarTrama(this.functionNumber);
 
         /* Enviar la petición */
         if (this.jSerialModbus == null) {
             this.jSerialModbus = new SerialModbus(this.port);
         }
-
-        response = jSerialModbus.execute(trama, 24);
         
-        if(checkFuntionCode(response)){
+        while(retries > 0){        
+            
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    response = jSerialModbus.execute(trama, 24);
+                }
+            });
+            thread.start();
+            
+            boolean controlTimeout = true;
+            long endTimeMillis = System.currentTimeMillis() + this.timeout;
+            while (controlTimeout) {
+                if(response != null) controlTimeout = false; 
+                if (System.currentTimeMillis() > endTimeMillis) {
+                    controlTimeout = false;                    
+                }
+            }
+            if(response != null){
+                retries = 0;
+            }else{
+                retries -= 1;
+            }
+            thread.interrupt();
+            thread.stop();
+            thread = null;
+        }
+        if(response != null && checkFuntionCode(response)){
             respuesta = toFormat(response, format);
         }else{
-            respuesta = "Ocurrio un error \n" + errorMsg(response)+ "\n Rx: " + toFormat(response, format);
+            if(response != null){
+              respuesta = "Ocurrio un error \n" + errorMsg(response)+ "\n Rx: " + toFormat(response, format);  
+            }else{
+              respuesta = "Ocurrio un error en la comunicacion ";
+            }            
         }
-        
 
         return respuesta;
     }
