@@ -386,7 +386,7 @@ public class Config extends javax.swing.JFrame {
         }
 
         if (valorCorrecto) {
-            String tramaRecibida = modbus.execute(valores, cbxOpcionVisualizacion.getSelectedIndex());
+            String tramaRecibida = modbus.execute(valores, cbxOpcionVisualizacion.getSelectedIndex(), tablaValores);
             txAreaTraffic.setText(tramaRecibida + "\n" + txAreaTraffic.getText());
         } else {
             txAreaTraffic.setText("El valor ingresado excede el limite del registro. " + "\n");
@@ -447,7 +447,7 @@ public class Config extends javax.swing.JFrame {
                     while (true) {
                         if (System.currentTimeMillis() > endTimeMillis) {
                             //String tramaRecibida = modbus.execute(null);
-                            String tramaRecibida = modbus.execute(valores, cbxOpcionVisualizacion.getSelectedIndex());
+                            String tramaRecibida = modbus.execute(valores, cbxOpcionVisualizacion.getSelectedIndex(), tablaValores);
                             txAreaTraffic.setText(tramaRecibida + "\n" + txAreaTraffic.getText());
                             endTimeMillis = System.currentTimeMillis() + 1500;
                         }

@@ -7,6 +7,7 @@ package jmodbus;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JTable;
 
 /**
  *
@@ -20,7 +21,9 @@ public class Modbus {
     private int retries;
     private String id;
     private int address;
+    private int tempAddress;
     private int nvar;
+    private int tempNVar;
     private int[] valores;
     private int functionNumber;
     private CRC16 crc16;
@@ -62,57 +65,68 @@ public class Modbus {
         return respuesta;
     }
 
-    public String execute(int[] valores, int format) {
-        String respuesta = "";
-        response = null;
-        int retries = this.retries;
+    public String execute(int[] valores, int format, JTable tableValues) {
+        String respuesta = "";        
         this.valores = valores;
-
-        /* Armamos la trama de acuerdo a la función */
-        trama = armarTrama(this.functionNumber);
-
-        /* Enviar la petición */
-        if (this.jSerialModbus == null) {
-            this.jSerialModbus = new SerialModbus(this.port);
+        int ntramas = 1;
+        if(this.functionNumber == 3){
+            ntramas = (int) (this.nvar / 125) + 1;
         }
-        
-        while(retries > 0){        
-            
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    response = jSerialModbus.execute(trama, 24);
-                }
-            });
-            thread.start();
-            
-            boolean controlTimeout = true;
-            long endTimeMillis = System.currentTimeMillis() + this.timeout;
-            while (controlTimeout) {
-                if(response != null) controlTimeout = false; 
-                if (System.currentTimeMillis() > endTimeMillis) {
-                    controlTimeout = false;                    
-                }
-            }
-            if(response != null){
-                retries = 0;
+        for(int i = 0; i < ntramas; i++){
+            response = null;
+            int retries = this.retries;
+            this.tempAddress = this.address + i * 125;
+            if(i < ntramas - 1){
+                this.tempNVar = 125;
             }else{
-                retries -= 1;
+                this.tempNVar = (this.nvar % 125);
             }
-            thread.interrupt();
-            thread.stop();
-            thread = null;
-        }
-        if(response != null && checkFuntionCode(response)){
-            respuesta = toFormat(response, format);
-        }else{
-            if(response != null){
-              respuesta = "Ocurrio un error \n" + errorMsg(response)+ "\n Rx: " + toFormat(response, format);  
-            }else{
-              respuesta = "Ocurrio un error en la comunicacion ";
-            }            
-        }
+            /* Armamos la trama de acuerdo a la función */
+            trama = armarTrama(this.functionNumber);
 
+            /* Enviar la petición */
+            if (this.jSerialModbus == null) {
+                this.jSerialModbus = new SerialModbus(this.port);
+            }
+
+            while(retries > 0){        
+
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        response = jSerialModbus.execute(trama, 24);
+                    }
+                });
+                thread.start();
+
+                boolean controlTimeout = true;
+                long endTimeMillis = System.currentTimeMillis() + this.timeout;
+                while (controlTimeout) {
+                    if(response != null) controlTimeout = false; 
+                    if (System.currentTimeMillis() > endTimeMillis) {
+                        controlTimeout = false;                    
+                    }
+                }
+                if(response != null){
+                    retries = 0;
+                }else{
+                    retries -= 1;
+                }
+                thread.interrupt();
+                thread.stop();
+                thread = null;
+            }
+            if(response != null && checkFuntionCode(response)){
+                respuesta += toFormat(response, format) + "\n";
+                toTableValues(tableValues, response);
+            }else{
+                if(response != null){
+                  respuesta += "Ocurrio un error \n" + errorMsg(response)+ "\n Rx: " + toFormat(response, format);  
+                }else{
+                  respuesta += "Ocurrio un error en la comunicacion ";
+                }            
+            }
+        }
         return respuesta;
     }
 
@@ -146,12 +160,12 @@ public class Modbus {
         trama.add(new Byte((byte) this.functionNumber));
 
         /* #3: (2 byte) direccion de inicio de lectura (0..255)(0..255) */
-        trama.add(new Byte((byte) (this.address / 256)));
-        trama.add(new Byte((byte) (this.address % 256)));
+        trama.add(new Byte((byte) (this.tempAddress / 256)));
+        trama.add(new Byte((byte) (this.tempAddress % 256)));
 
         /* #4: (2 byte) cantidad de variables (0..255)(0..255) */
-        trama.add(new Byte((byte) (this.nvar / 256)));
-        trama.add(new Byte((byte) (this.nvar % 256)));
+        trama.add(new Byte((byte) (this.tempNVar / 256)));
+        trama.add(new Byte((byte) (this.tempNVar % 256)));
 
         /* #5: (2 byte) CRC (0..255)(0..255) */
         byte[] tramaEnviar = crc16.calcularCrc16(trama);
@@ -263,6 +277,35 @@ public class Modbus {
             default:
                 return "Error desconocido";
                 
+        }
+    }
+
+    private void toTableValues(JTable tableValues, List<Integer> response) {
+        int row = 0;
+        switch(this.functionNumber){            
+            case 3:
+                for (int i = 3; i < (response.size() - 2); i++) {       
+                    if(i % 2 == 1){
+                        String binary = Integer.toBinaryString(response.get(i)) + Integer.toBinaryString(response.get(i+1));
+                        int unsignedVal = Integer.parseInt(binary, 2);
+                        tableValues.setValueAt(unsignedVal, row, 1);
+                        row++;
+                    }
+                }
+            break;
+            case 6:
+                for (int i = 4; i < (response.size() - 2); i++) {       
+                    if(i % 2 == 0){
+                        String binary = Integer.toBinaryString(response.get(i)) + Integer.toBinaryString(response.get(i+1));
+                        int unsignedVal = Integer.parseInt(binary, 2);
+                        tableValues.setValueAt(unsignedVal, row, 1);
+                        row++;
+                    }
+                }
+            break;
+            case 16:
+                // Implementar
+                break;
         }
     }
 }
