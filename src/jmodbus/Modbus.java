@@ -288,7 +288,7 @@ public class Modbus {
                     if(i % 2 == 1){
                         String binary = Integer.toBinaryString(response.get(i)) + Integer.toBinaryString(response.get(i+1));
                         int unsignedVal = Integer.parseInt(binary, 2);
-                        tableValues.setValueAt(unsignedVal, row, 1);
+                        tableValues.setValueAt(unsignedVal, row + this.tempAddress, 1);
                         row++;
                     }
                 }
