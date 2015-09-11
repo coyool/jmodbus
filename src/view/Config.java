@@ -17,9 +17,9 @@ import jmodbus.PortConfiguration;
  * @author LUCAS
  */
 public class Config extends javax.swing.JFrame {
-    
+
     Thread thread;
-    
+
     /**
      * Creates new form Config
      */
@@ -55,8 +55,6 @@ public class Config extends javax.swing.JFrame {
         textID = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         textDireccion = new javax.swing.JTextField();
-        jLabel8 = new javax.swing.JLabel();
-        comboVariables = new javax.swing.JComboBox();
         jLabel11 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         txtAreaUltimoDispositivo = new javax.swing.JTextArea();
@@ -75,6 +73,8 @@ public class Config extends javax.swing.JFrame {
         jLabel14 = new javax.swing.JLabel();
         comboFuncion = new javax.swing.JComboBox();
         jLabel9 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        nroValores = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -85,10 +85,12 @@ public class Config extends javax.swing.JFrame {
         jLabel2.setText("Baud Rate:");
 
         comboRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1200", "2400", "4800", "9600", "14400", "19200" }));
+        comboRate.setSelectedIndex(3);
 
         jLabel4.setText("Timeout (ms):");
 
         comboTimeout.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "500", "1000", "1500", "2000" }));
+        comboTimeout.setSelectedIndex(1);
 
         jLabel5.setText("N° Reintentos:");
 
@@ -157,15 +159,6 @@ public class Config extends javax.swing.JFrame {
 
         jLabel7.setText("Direccion Inicial:");
 
-        jLabel8.setText("N° Variables:");
-
-        comboVariables.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "10", "20", "50", "100" }));
-        comboVariables.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                comboVariablesActionPerformed(evt);
-            }
-        });
-
         jLabel11.setText("Última dispositivo");
 
         txtAreaUltimoDispositivo.setColumns(20);
@@ -182,8 +175,6 @@ public class Config extends javax.swing.JFrame {
                     .addComponent(jLabel6)
                     .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(textDireccion)
-                    .addComponent(jLabel8)
-                    .addComponent(comboVariables, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(textID))
                 .addGap(27, 27, 27)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -207,11 +198,7 @@ public class Config extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(textDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel8)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(comboVariables, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(textDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(188, Short.MAX_VALUE))
         );
@@ -275,6 +262,15 @@ public class Config extends javax.swing.JFrame {
 
         jLabel9.setText("Funcion:");
 
+        jLabel8.setText("N° Variables:");
+
+        nroValores.setText("1");
+        nroValores.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                nroValoresKeyReleased(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -300,7 +296,9 @@ public class Config extends javax.swing.JFrame {
                             .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                             .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
                             .addComponent(comboFuncion, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel8)
+                            .addComponent(nroValores))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane1)
@@ -328,10 +326,14 @@ public class Config extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(comboFuncion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(nroValores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -353,40 +355,52 @@ public class Config extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
-        
+
+        boolean valorCorrecto = true;
         int[] valores = new int[tablaValores.getRowCount()];
+        int nroVariables;
+        try {
+            nroVariables = Integer.valueOf(nroValores.getText());
+        } catch (NumberFormatException e) {
+            nroVariables = 1;
+        }
+
         this.modbus = new Modbus(comboPuerto.getSelectedItem().toString(),
                 Integer.valueOf(comboRate.getSelectedItem().toString()),
                 Integer.valueOf(comboTimeout.getSelectedItem().toString()),
                 Integer.valueOf(comboReintentos.getSelectedItem().toString()), textID.getText(),
-                Integer.valueOf(textDireccion.getText()), Integer.valueOf(comboVariables.getSelectedItem().toString()),
+                Integer.valueOf(textDireccion.getText()), nroVariables,
                 Integer.valueOf(comboFuncion.getSelectedItem().toString()));
-        
+
         for (int i = 0; i < tablaValores.getRowCount(); i++) {
-            try{
-                valores[i] = Integer.valueOf((String)tablaValores.getValueAt(i, 1));
-            }catch(ClassCastException e){
+            try {
+                int valor = Integer.valueOf((String) tablaValores.getValueAt(i, 1));
+                if (valor > 65535) {
+                    valorCorrecto = false;
+                    break;
+                }
+                valores[i] = valor;
+            } catch (ClassCastException e) {
                 valores[i] = 0;
-            } 
+            }
         }
-        
-        String tramaRecibida = modbus.execute(valores, cbxOpcionVisualizacion.getSelectedIndex());
-        txAreaTraffic.setText(tramaRecibida + " \n" + txAreaTraffic.getText());
-        
+
+        if (valorCorrecto) {
+            String tramaRecibida = modbus.execute(valores, cbxOpcionVisualizacion.getSelectedIndex());
+            txAreaTraffic.setText(tramaRecibida + "\n" + txAreaTraffic.getText());
+        } else {
+            txAreaTraffic.setText("El valor ingresado excede el limite del registro. " + "\n");
+        }
+
         this.modbus.closeSerialPort();
     }//GEN-LAST:event_btnSendActionPerformed
-
-    private void comboVariablesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboVariablesActionPerformed
-        // TODO add your handling code here:
-        tablaValores.setModel(crearTabla(Integer.valueOf(comboVariables.getSelectedItem().toString())));
-    }//GEN-LAST:event_comboVariablesActionPerformed
 
     private void comboFuncionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboFuncionActionPerformed
         // TODO add your handling code here:
         if (comboFuncion.getSelectedItem().toString().equals("3")) {
             tablaValores.setEnabled(false);
         } else if (comboFuncion.getSelectedItem().toString().equals("6")) {
-            comboVariables.setSelectedIndex(0);
+            nroValores.setText("1");
             tablaValores.setEnabled(true);
         } else {
             tablaValores.setEnabled(true);
@@ -397,38 +411,53 @@ public class Config extends javax.swing.JFrame {
         if (this.modbus != null) {
             this.modbus.closeSerialPort();
         }
+        boolean valorCorrecto = true;
         final int[] valores = new int[tablaValores.getRowCount()];
         //this.modbus = new Modbus("COM2", 9600, 30, 3, "1", 0, 10, 3);
+        int nroVariables;
+        try {
+            nroVariables = Integer.valueOf(nroValores.getText());
+        } catch (NumberFormatException e) {
+            nroVariables = 1;
+        }
         this.modbus = new Modbus(comboPuerto.getSelectedItem().toString(),
                 Integer.valueOf(comboRate.getSelectedItem().toString()),
                 Integer.valueOf(comboTimeout.getSelectedItem().toString()),
                 Integer.valueOf(comboReintentos.getSelectedItem().toString()), textID.getText(),
-                Integer.valueOf(textDireccion.getText()), Integer.valueOf(comboVariables.getSelectedItem().toString()),
+                Integer.valueOf(textDireccion.getText()), nroVariables,
                 Integer.valueOf(comboFuncion.getSelectedItem().toString()));
-        
+
         for (int i = 0; i < tablaValores.getRowCount(); i++) {
-            try{
-                valores[i] = Integer.valueOf((String)tablaValores.getValueAt(i, 1));
-            }catch(ClassCastException e){
+            try {
+                int valor = Integer.valueOf((String) tablaValores.getValueAt(i, 1));
+                if (valor > 65535) {
+                    valorCorrecto = false;
+                    break;
+                }
+                valores[i] = valor;
+            } catch (ClassCastException e) {
                 valores[i] = 0;
-            }            
+            }
         }
-        
-        thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                long endTimeMillis = System.currentTimeMillis() + 1500;
-                while (true) {
-                    if (System.currentTimeMillis() > endTimeMillis) {
-                        //String tramaRecibida = modbus.execute(null);
-                        String tramaRecibida = modbus.execute(valores, cbxOpcionVisualizacion.getSelectedIndex());
-                        txAreaTraffic.setText(tramaRecibida + "\n" + txAreaTraffic.getText());
-                        endTimeMillis = System.currentTimeMillis() + 1500;
+        if (valorCorrecto) {
+            thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    long endTimeMillis = System.currentTimeMillis() + 1500;
+                    while (true) {
+                        if (System.currentTimeMillis() > endTimeMillis) {
+                            //String tramaRecibida = modbus.execute(null);
+                            String tramaRecibida = modbus.execute(valores, cbxOpcionVisualizacion.getSelectedIndex());
+                            txAreaTraffic.setText(tramaRecibida + "\n" + txAreaTraffic.getText());
+                            endTimeMillis = System.currentTimeMillis() + 1500;
+                        }
                     }
                 }
-            }
-        });
-        thread.start();
+            });
+            thread.start();
+        } else {
+            txAreaTraffic.setText("El valor ingresado excede el limite del registro. " + "\n");
+        }
     }//GEN-LAST:event_btnStartActionPerformed
 
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
@@ -439,6 +468,17 @@ public class Config extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_btnStopActionPerformed
+
+    private void nroValoresKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nroValoresKeyReleased
+        // TODO add your handling code here:
+        int nfilas;
+        try {
+            nfilas = Integer.valueOf(nroValores.getText());
+        } catch (NumberFormatException e) {
+            nfilas = 0;
+        }
+        tablaValores.setModel(crearTabla(nfilas));
+    }//GEN-LAST:event_nroValoresKeyReleased
 
     /**
      * @param args the command line arguments
@@ -485,7 +525,6 @@ public class Config extends javax.swing.JFrame {
     private javax.swing.JComboBox comboRate;
     private javax.swing.JComboBox comboReintentos;
     private javax.swing.JComboBox comboTimeout;
-    private javax.swing.JComboBox comboVariables;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -508,6 +547,7 @@ public class Config extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTextField nroValores;
     private javax.swing.JTable tablaValores;
     private javax.swing.JTextField textDireccion;
     private javax.swing.JTextField textID;
@@ -525,16 +565,16 @@ public class Config extends javax.swing.JFrame {
         for (Object port : ports) {
             this.comboPuerto.addItem(port);
         }
-        DefaultComboBoxModel defaultComboBoxModel = new DefaultComboBoxModel();
-        for (int i = 1; i < 124; i++) {
-            defaultComboBoxModel.addElement(i);
-        }
-        this.comboVariables.setModel(defaultComboBoxModel);
     }
 
     private DefaultTableModel crearTabla(Integer valueOf) {
         DefaultTableModel defaultTableModel = new DefaultTableModel();
-        int nFilas = Integer.valueOf(comboVariables.getSelectedItem().toString());
+        int nFilas;
+        try {
+            nFilas = Integer.valueOf(nroValores.getText());
+        } catch (NumberFormatException e) {
+            nFilas = 0;
+        }
         defaultTableModel.addColumn("Alias");
         defaultTableModel.addColumn("Valor");
         for (int i = 0; i < nFilas; i++) {
