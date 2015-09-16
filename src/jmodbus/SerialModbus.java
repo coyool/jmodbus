@@ -30,7 +30,7 @@ public class SerialModbus extends Thread {
     private int responseLength = 100;
     private int deviseId = 0;
 
-    public SerialModbus(String nombrePuerto) {
+    public SerialModbus(String nombrePuerto, int baud) {
         CommPortIdentifier portId;
         Enumeration portList;
         portList = CommPortIdentifier.getPortIdentifiers();
@@ -39,7 +39,7 @@ public class SerialModbus extends Thread {
             if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL && portId.getName().equalsIgnoreCase(nombrePuerto)) {
                 try {
                     this.serialPort = (SerialPort) portId.open(portId.getName(), 1971);
-                    this.serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_EVEN);
+                    this.serialPort.setSerialPortParams(baud, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_EVEN);
                 } catch (Exception ex) {
                     Logger.getLogger(SerialModbus.class.getName()).log(Level.SEVERE, null, ex);
                 }
