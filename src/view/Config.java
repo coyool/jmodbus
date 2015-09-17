@@ -679,7 +679,8 @@ public class Config extends javax.swing.JFrame {
         DefaultTableModel defaultTableModel = new DefaultTableModel();
         int nFilas;
         try {
-            nFilas = Integer.valueOf(nroValores.getText());
+            if(this.textDireccion.getText().equals("")) this.textDireccion.setText("0");
+            nFilas = Integer.valueOf(nroValores.getText()) + Integer.valueOf(this.textDireccion.getText());
         } catch (NumberFormatException e) {
             nFilas = 0;
         }

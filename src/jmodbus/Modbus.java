@@ -58,7 +58,7 @@ public class Modbus {
         trama = armarTrama(this.functionNumber);
 
         /* Enviar la petición */
-        this.jSerialModbus = new SerialModbus(this.port);
+        this.jSerialModbus = new SerialModbus(this.port, this.rate);
 
         //respuesta = jSerialModbus.execute(trama, 24);
 
@@ -86,7 +86,7 @@ public class Modbus {
 
             /* Enviar la petición */
             if (this.jSerialModbus == null) {
-                this.jSerialModbus = new SerialModbus(this.port);
+                this.jSerialModbus = new SerialModbus(this.port, this.rate);
             }
 
             while(retries > 0){        
