@@ -5,8 +5,8 @@
  */
 package main;
 
-import jmodbus.Modbus;
-import jmodbus.SerialModbus;
+import jmodbus.JModbus;
+import jmodbus.SerialJModbus;
 import view.Config;
 
 /**
