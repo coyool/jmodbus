@@ -9,8 +9,9 @@ import java.util.Collection;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import jmodbus.Modbus;
+import jmodbus.JModbus;
 import jmodbus.PortConfiguration;
+import jmodbus.SerialJModbus;
 
 /**
  *
@@ -364,11 +365,11 @@ public class Config extends javax.swing.JFrame {
         } catch (NumberFormatException e) {
             nroVariables = 1;
         }
-
-        this.modbus = new Modbus(comboPuerto.getSelectedItem().toString(),
+        
+        this.modbus = new SerialJModbus(comboPuerto.getSelectedItem().toString(),
                 Integer.valueOf(comboRate.getSelectedItem().toString()),
                 Integer.valueOf(comboTimeout.getSelectedItem().toString()),
-                Integer.valueOf(comboReintentos.getSelectedItem().toString()), textID.getText(),
+                Integer.valueOf(comboReintentos.getSelectedItem().toString()), Integer.parseInt(textID.getText()),
                 Integer.valueOf(textDireccion.getText()), nroVariables,
                 Integer.valueOf(comboFuncion.getSelectedItem().toString()));
 
@@ -392,7 +393,7 @@ public class Config extends javax.swing.JFrame {
             txAreaTraffic.setText("El valor ingresado excede el limite del registro. " + "\n");
         }
 
-        this.modbus.closeSerialPort();
+        this.modbus.close();
     }//GEN-LAST:event_btnSendActionPerformed
 
     private void comboFuncionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboFuncionActionPerformed
@@ -409,7 +410,7 @@ public class Config extends javax.swing.JFrame {
 
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
         if (this.modbus != null) {
-            this.modbus.closeSerialPort();
+            this.modbus.close();
         }
         boolean valorCorrecto = true;
         final int[] valores = new int[tablaValores.getRowCount()];
@@ -420,10 +421,11 @@ public class Config extends javax.swing.JFrame {
         } catch (NumberFormatException e) {
             nroVariables = 1;
         }
-        this.modbus = new Modbus(comboPuerto.getSelectedItem().toString(),
+        this.modbus = new SerialJModbus(comboPuerto.getSelectedItem().toString(),
                 Integer.valueOf(comboRate.getSelectedItem().toString()),
                 Integer.valueOf(comboTimeout.getSelectedItem().toString()),
-                Integer.valueOf(comboReintentos.getSelectedItem().toString()), textID.getText(),
+                Integer.valueOf(comboReintentos.getSelectedItem().toString()), 
+                Integer.parseInt(textID.getText()),
                 Integer.valueOf(textDireccion.getText()), nroVariables,
                 Integer.valueOf(comboFuncion.getSelectedItem().toString()));
 
@@ -464,7 +466,7 @@ public class Config extends javax.swing.JFrame {
         if (this.thread != null) {
             this.thread.stop();
             if (this.modbus != null) {
-                this.modbus.closeSerialPort();
+                this.modbus.close();
             }
         }
     }//GEN-LAST:event_btnStopActionPerformed
@@ -556,7 +558,7 @@ public class Config extends javax.swing.JFrame {
     private javax.swing.JTextArea txtAreaUltimoDispositivo;
     // End of variables declaration//GEN-END:variables
 
-    private Modbus modbus;
+    private JModbus modbus;
 
     private void init() {
         PortConfiguration portConfiguration = new PortConfiguration();

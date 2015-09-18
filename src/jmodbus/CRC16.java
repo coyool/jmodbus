@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class CRC16 {
 
-    public byte[] calcularCrc16(List<Byte> trama) {
+    public List<Byte> addCrc16(List<Byte> frame) {
         int[] table = {
             0X0000, 0XC0C1, 0XC181, 0X0140, 0XC301, 0X03C0, 0X0280, 0XC241,
             0XC601, 0X06C0, 0X0780, 0XC741, 0X0500, 0XC5C1, 0XC481, 0X0440,
@@ -50,24 +50,18 @@ public class CRC16 {
 
         int crc = 0xffff;
 
-        for (byte b : trama) {
+        for (byte b : frame) {
             crc = (crc >>> 8) ^ table[(crc ^ b) & 0xff];
-        }
-
-        byte[] retorno = new byte[trama.size() + 2];
-        int i;
-        for (i = 0; i < trama.size(); i++) {
-            retorno[i] = trama.get(i).byteValue();
         }
 
         byte[] byteStr = new byte[2];
         byteStr[0] = (byte) ((crc & 0x00ff));
         byteStr[1] = (byte) ((crc & 0xff00) >>> 8);
 
-        retorno[i] = byteStr[0];
-        retorno[i + 1] = byteStr[1];
+        frame.add(byteStr[0]);
+        frame.add(byteStr[1]);
 
-        return retorno;
+        return frame;
     }
 
     public boolean isCRCOk(byte[] trama) {
