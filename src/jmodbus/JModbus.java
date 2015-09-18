@@ -5,69 +5,51 @@
  */
 package jmodbus;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JTable;
 
 /**
  *
- * @author LUCAS
+ * @author mnanom
  */
-public class Modbus {
-
-    private String port;
-    private int rate;
-    private int timeout;
-    private int retries;
-    private String id;
-    private int address;
-    private int tempAddress;
-    private int nvar;
-    private int tempNVar;
-    private int[] valores;
-    private int functionNumber;
-    private CRC16 crc16;
-    private SerialModbus jSerialModbus;
-    private byte[] trama;
-    public static final int DECIMAL = 0;
-    public static final int HEX = 1;
-    public static final int BINARY = 2;
+public abstract class JModbus{
+    protected InputStream inStream;
+    protected OutputStream outStream;
+    protected int[] values;
+    protected int deviseId;
+    protected int rate;
+    protected int timeout;
+    protected int retries;    
+    protected int address;
+    protected int tempAddress;
+    protected int nvar;
+    protected int tempNVar;
+    protected int functionNumber;
+    protected boolean isConnect = false;
+    
     private List<Integer> response = null;
-        
-    public Modbus(String port, int rate, int timeout, int retries, String id, int address, int nvar, int functionNumber) {
-        this.port = port;
+    private byte[] frame;
+    
+    public JModbus(int rate, int timeout, int retries, int deviseId, int address, int nvar, int functionNumber) {
         this.rate = rate;
         this.timeout = timeout;
         this.retries = retries;
-        this.id = id;
+        this.deviseId = deviseId;
         this.address = address;
         this.nvar = nvar;
         this.functionNumber = functionNumber;
-        this.crc16 = new CRC16();
     }
-
-    public void closeSerialPort() {
-        this.jSerialModbus.close();
-    }
-
-    public String ejecutarPeticion(int[] valores) {
-        String respuesta = "";
-        this.valores = valores;
-
-        /* Armamos la trama de acuerdo a la función */
-        trama = armarTrama(this.functionNumber);
-
-        /* Enviar la petición */
-        this.jSerialModbus = new SerialModbus(this.port, this.rate);
-
-        //respuesta = jSerialModbus.execute(trama, 24);
-
-        return respuesta;
-    }
-
-    public String execute(int[] valores, int format, JTable tableValues) {
+    
+    public String execute(int[] values, int format, JTable tableValues) {
         String respuesta = "";        
-        this.valores = valores;
+        this.values = values;
         int ntramas = 1;
         if(this.functionNumber == 3){
             ntramas = (int) (this.nvar / 125) + 1;
@@ -82,19 +64,14 @@ public class Modbus {
                 this.tempNVar = (this.nvar % 125);
             }
             /* Armamos la trama de acuerdo a la función */
-            trama = armarTrama(this.functionNumber);
-
-            /* Enviar la petición */
-            if (this.jSerialModbus == null) {
-                this.jSerialModbus = new SerialModbus(this.port, this.rate);
-            }
+            frame = createFrame(this.functionNumber);
 
             while(retries > 0){        
 
                 Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        response = jSerialModbus.execute(trama, 24);
+                        response = execute(frame);
                     }
                 });
                 thread.start();
@@ -130,113 +107,210 @@ public class Modbus {
         return respuesta;
     }
 
-    private byte[] armarTrama(int functionNumber) {
-        byte[] trama = null;
-        switch (functionNumber) {
-            case 3:
-                trama = armarTramaFunction3();
-                break;
-            case 6:
-                trama = armarTramaFunction6(valores[0]);
-                break;
-            case 16:
-                trama = armarTramaFunction16(valores);
-                int valor = 0;
-                //trama = armarTramaFunction6(valor);
-                break;
-            //trama = armarTramaFunction16();
+    
+    private List<Integer> execute(byte[] frame) {
+        List<Integer> response = new ArrayList<Integer>();
+        
+        /* Dejo registro de la trama que voy a enviar */
+        logFrame("Tx:", frame);
+        
+        /* Envío la trama */
+        try {
+            if(outStream == null) setOutputStream();
+            outStream.write(frame);
+        } catch (IOException ex) {
+            Logger.getLogger(SerialJModbus.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return trama;
+        /* Espero la respuesta de la petición */
+        try {
+            if(inStream == null) setInputStream();
+            int bit = -1;
+            boolean control = true;
+            
+            /* Se queda esperando a que la trama traiga el ID del dispositivo */
+            while (control) {
+                bit = inStream.read();
+                if (parseUnsignedInt(bit) == deviseId) {
+                    response.add(parseUnsignedInt(bit));
+                    control = false;
+                }                
+            }
+            
+            /* Lee la trama completa */
+            while(true){
+               bit = inStream.read();
+               if(bit == -1) break;
+               int byteInt = parseUnsignedInt(bit);
+               response.add(byteInt); 
+            }
+            /* Dejo registro de la trama que recibo */
+            logFrame("Rx:", response);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(SerialJModbus.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return response;
     }
+    
+    private byte[] createFrame(int functionNumber) {
+        byte[] frame = null;
+        switch (functionNumber) {
+            case 3:
+                frame = createFrameFunction3();
+                break;
+            case 6:
+                frame = createFrameFunction6(values[0]);
+                break;
+            case 16:
+                frame = createFrameFunction16(values);
+                break;
+        }
 
-    private byte[] armarTramaFunction3() {
-        List<Byte> trama = new ArrayList<>();
+        return frame;
+    }
+    
+    private byte[] createFrameFunction3() {
+        List<Byte> frame = new ArrayList<>();
 
-        /* #1: (1 byte) ID del dispositivo 0..255 */
-        trama.add(prepararByte(this.id));
+        /* #1: (N bytes) Encabezado de la trama */
+        frame = addHeaderFrame(frame);        
 
         /* #2: (1 byte) numero de funcion 0..255 */
-        trama.add(new Byte((byte) this.functionNumber));
+        frame.add(new Byte((byte) this.functionNumber));
 
         /* #3: (2 byte) direccion de inicio de lectura (0..255)(0..255) */
-        trama.add(new Byte((byte) (this.tempAddress / 256)));
-        trama.add(new Byte((byte) (this.tempAddress % 256)));
+        frame.add(new Byte((byte) (this.tempAddress / 256)));
+        frame.add(new Byte((byte) (this.tempAddress % 256)));
 
         /* #4: (2 byte) cantidad de variables (0..255)(0..255) */
-        trama.add(new Byte((byte) (this.tempNVar / 256)));
-        trama.add(new Byte((byte) (this.tempNVar % 256)));
+        frame.add(new Byte((byte) (this.tempNVar / 256)));
+        frame.add(new Byte((byte) (this.tempNVar % 256)));
 
-        /* #5: (2 byte) CRC (0..255)(0..255) */
-        byte[] tramaEnviar = crc16.calcularCrc16(trama);
+        /* #5: (N bytes) Chequeo de error de la trama */
+        frame = addErrorCheck(frame);
+        
+        /* Convierto el List en array */
+        byte [] frameToSend = toByteArray(frame);
 
-        return tramaEnviar;
+        return frameToSend;
     }
 
-    private byte[] armarTramaFunction6(int valor) {
-        List<Byte> trama = new ArrayList<>();
+    private byte[] createFrameFunction6(int valor) {
+        List<Byte> frame = new ArrayList<>();
 
-        /* #1: (1 byte) ID del dispositivo 0..64 */
-        trama.add(prepararByte(this.id));
+        /* #1: (N bytes) Encabezado de la trama */
+        frame = addHeaderFrame(frame); 
 
         /* #2: (1 byte) numero de funcion 0..255 */
-        trama.add((byte) functionNumber);
+        frame.add((byte) functionNumber);
 
         /* #3: (2 byte) direccion de inicio de lectura (0..255)(0..255) */
-        trama.add((byte) (address / 256));
-        trama.add((byte) (address % 256));
+        frame.add((byte) (address / 256));
+        frame.add((byte) (address % 256));
 
         /* #4: (2 byte) cantidad de variables (0..255)(0..255) */
-        trama.add((byte) (valor / 256));
-        trama.add((byte) (valor % 256));
+        frame.add((byte) (valor / 256));
+        frame.add((byte) (valor % 256));
 
-        /* #5: (2 byte) CRC (0..255)(0..255) */
-        byte[] tramaEnviar = crc16.calcularCrc16(trama);
+        /* #5: (N bytes) Chequeo de error de la trama */
+        frame = addErrorCheck(frame);
+        
+        /* Convierto el List en array */
+        byte [] frameToSend = toByteArray(frame);
 
-        return tramaEnviar;
+        return frameToSend;
     }
 
-    private byte[] armarTramaFunction16(int[] valores) {
+    private byte[] createFrameFunction16(int[] valores) {
         //El tamaño de el arreglo de datos no debe superar los 123 registros
         //Se debe calcular la cantidad de bytes que se envian en funcion de la cantidad de registros a escribir  (n reg x 2 bytes)
         /*El formato de la trama es: [id], [funcion], [address], [cantidad de registros], [cantidad de bytes], [valores], [CRC]*/
-        List<Byte> trama = new ArrayList<>();
+        List<Byte> frame = new ArrayList<>();
 
-        /* #1: (1 byte) ID del dispositivo 0..64 */
-        trama.add(prepararByte(this.id));
+        /* #1: (N bytes) Encabezado de la trama */
+        frame = addHeaderFrame(frame); 
 
         /* #2: (1 byte) numero de funcion 0..255 */
-        trama.add((byte) functionNumber);
+        frame.add((byte) functionNumber);
 
         /* #3: (2 byte) direccion de inicio de lectura (0..255)(0..255) */
-        trama.add((byte) (address / 256));
-        trama.add((byte) (address % 256));
+        frame.add((byte) (address / 256));
+        frame.add((byte) (address % 256));
 
         /* #4: (2 byte) cantidad de variables (0..255)(0..255) */
-        trama.add((byte) (this.nvar / 256));
-        trama.add((byte) (this.nvar % 256));
+        frame.add((byte) (this.nvar / 256));
+        frame.add((byte) (this.nvar % 256));
 
         /* #5 (2 byte) cantidad de bytes de datos */
-        trama.add((byte) (this.nvar * 2));
+        frame.add((byte) (this.nvar * 2));
 
         /* #6 (2 a 2*n bytes) valores a escribir en los registros */
         for (int valor : valores) {
-            trama.add((byte) (valor / 256));
-            trama.add((byte) (valor % 256));
+            frame.add((byte) (valor / 256));
+            frame.add((byte) (valor % 256));
         }
 
-        byte[] tramaEnviar = crc16.calcularCrc16(trama);
+        /* #7: (N bytes) Chequeo de error de la trama */
+        frame = addErrorCheck(frame);
+        
+        /* Convierto el List en array */
+        byte [] frameToSend = toByteArray(frame);
 
-        return tramaEnviar;
+        return frameToSend;
+    }
+        
+    protected byte prepareByte(String byteString) {
+        int value = Integer.valueOf(byteString);
+        return (byte) value;
+    }
+    
+    private int parseUnsignedInt(int toConvert) {
+        byte b = (byte) toConvert;
+        return (b & 0xFF);
     }
 
-    private byte prepararByte(String byteString) {
-        byte retorno;
-        int valor = Integer.valueOf(byteString);
-        retorno = (byte) valor;
-        return retorno;
+    private String toHex(String arg) {
+        return String.format("%040x", new BigInteger(1, arg.getBytes()));
+    }   
+
+    private byte[] toByteArray(List<Byte> frame) {
+        byte[] result = new byte[frame.size()];
+        for(int i = 0; i < frame.size(); i++){
+            result[i] = frame.get(i).byteValue();
+        }
+        return result;
+    }
+    
+    private void logFrame(String msg, byte[] frame) {
+        String frameStr = "| ";
+        for (int i = 0; i < frame.length; i++) {
+            int byteInt = parseUnsignedInt(frame[i]);
+            frameStr += String.valueOf(byteInt) + " | ";
+        }
+        System.out.println(msg + " " + frameStr);
     }
 
+    private void logFrame(String msg, List<Integer> frame) {
+        String frameStr = "| ";
+        for (Integer i : frame) {
+            frameStr += String.valueOf(i) + " | ";
+        }
+        System.out.println(msg + " " + frameStr);
+    }
+    
+    protected abstract List<Byte> addHeaderFrame(List<Byte> frame);
+
+    protected abstract List<Byte> addErrorCheck(List<Byte> frame);
+    
+    protected abstract void setInputStream();
+
+    protected abstract void setOutputStream();    
+
+    public abstract void close();
+    
+    
+    /* */
     private String toFormat(List<Integer> response, int format) {
         String respuesta = "";
         switch (format) {
