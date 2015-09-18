@@ -56,12 +56,12 @@ public class Config extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         comboPuerto = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
+        jrbSerial = new javax.swing.JRadioButton();
+        jrbTCP = new javax.swing.JRadioButton();
         jLabel3 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txIP = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        txPort = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -86,6 +86,7 @@ public class Config extends javax.swing.JFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Esclavo"));
 
+        textDireccion.setText("0");
         textDireccion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 textDireccionActionPerformed(evt);
@@ -93,6 +94,8 @@ public class Config extends javax.swing.JFrame {
         });
 
         jLabel7.setText("Direccion Inicial:");
+
+        textID.setText("1");
 
         jLabel6.setText("ID:");
 
@@ -153,29 +156,32 @@ public class Config extends javax.swing.JFrame {
 
         jLabel1.setText("Puertos:");
 
-        buttonGroup1.add(jRadioButton1);
-        jRadioButton1.setText("Serial");
-        jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
+        buttonGroup1.add(jrbSerial);
+        jrbSerial.setText("Serial");
+        jrbSerial.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton1ActionPerformed(evt);
+                jrbSerialActionPerformed(evt);
             }
         });
 
-        buttonGroup1.add(jRadioButton2);
-        jRadioButton2.setText("TCP");
-        jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
+        buttonGroup1.add(jrbTCP);
+        jrbTCP.setText("TCP");
+        jrbTCP.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton2ActionPerformed(evt);
+                jrbTCPActionPerformed(evt);
             }
         });
 
         jLabel3.setText("IP:");
 
+        txIP.setText("127.0.0.1");
+
         jLabel15.setText("PUERTO:");
 
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+        txPort.setText("502");
+        txPort.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
+                txPortActionPerformed(evt);
             }
         });
 
@@ -196,15 +202,15 @@ public class Config extends javax.swing.JFrame {
                                     .addComponent(comboPuerto, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(comboRate, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(jRadioButton1)
+                                        .addComponent(jrbSerial)
                                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addGap(48, 48, 48)
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jRadioButton2)
+                                    .addComponent(jrbTCP)
                                     .addComponent(jLabel15)
                                     .addComponent(jLabel3)
-                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(txIP, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txPort, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addComponent(comboTimeout, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(comboReintentos, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 28, Short.MAX_VALUE)))
@@ -215,8 +221,8 @@ public class Config extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton2)
-                    .addComponent(jRadioButton1))
+                    .addComponent(jrbTCP)
+                    .addComponent(jrbSerial))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
@@ -224,7 +230,7 @@ public class Config extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(comboPuerto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -232,7 +238,7 @@ public class Config extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(comboRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -338,7 +344,7 @@ public class Config extends javax.swing.JFrame {
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
+                                .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnStart)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -383,14 +389,14 @@ public class Config extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(comboFuncion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel8)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(nroValores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -425,13 +431,8 @@ public class Config extends javax.swing.JFrame {
             nroVariables = 1;
         }
         
-        this.modbus = new SerialJModbus(comboPuerto.getSelectedItem().toString(),
-                Integer.valueOf(comboRate.getSelectedItem().toString()),
-                Integer.valueOf(comboTimeout.getSelectedItem().toString()),
-                Integer.valueOf(comboReintentos.getSelectedItem().toString()), Integer.parseInt(textID.getText()),
-                Integer.valueOf(textDireccion.getText()), nroVariables,
-                Integer.valueOf(comboFuncion.getSelectedItem().toString()));
-
+        initializeModbus(nroVariables);
+             
         for (int i = 0; i < tablaValores.getRowCount(); i++) {
             try {
                 int valor = Integer.valueOf((String) tablaValores.getValueAt(i, 1));
@@ -468,9 +469,6 @@ public class Config extends javax.swing.JFrame {
     }//GEN-LAST:event_comboFuncionActionPerformed
 
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
-        if (this.modbus != null) {
-            this.modbus.close();
-        }
         boolean valorCorrecto = true;
         final int[] valores = new int[tablaValores.getRowCount()];
         //this.modbus = new Modbus("COM2", 9600, 30, 3, "1", 0, 10, 3);
@@ -480,13 +478,8 @@ public class Config extends javax.swing.JFrame {
         } catch (NumberFormatException e) {
             nroVariables = 1;
         }
-        this.modbus = new SerialJModbus(comboPuerto.getSelectedItem().toString(),
-                Integer.valueOf(comboRate.getSelectedItem().toString()),
-                Integer.valueOf(comboTimeout.getSelectedItem().toString()),
-                Integer.valueOf(comboReintentos.getSelectedItem().toString()), 
-                Integer.parseInt(textID.getText()),
-                Integer.valueOf(textDireccion.getText()), nroVariables,
-                Integer.valueOf(comboFuncion.getSelectedItem().toString()));
+        
+        initializeModbus(nroVariables);
 
         for (int i = 0; i < tablaValores.getRowCount(); i++) {
             try {
@@ -545,27 +538,27 @@ public class Config extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_comboRateActionPerformed
 
-    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
+    private void jrbTCPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrbTCPActionPerformed
         comboPuerto.setEnabled(false);
         comboRate.setEnabled(false);
         comboReintentos.setEnabled(false);
         comboTimeout.setEnabled(false);
-        jTextField1.setEnabled(true);
-        jTextField2.setEnabled(true);
-    }//GEN-LAST:event_jRadioButton2ActionPerformed
+        txIP.setEnabled(true);
+        txPort.setEnabled(true);
+    }//GEN-LAST:event_jrbTCPActionPerformed
 
-    private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
-        jTextField1.setEnabled(false);
-        jTextField2.setEnabled(false);
+    private void jrbSerialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrbSerialActionPerformed
+        txIP.setEnabled(false);
+        txPort.setEnabled(false);
         comboPuerto.setEnabled(true);
         comboRate.setEnabled(true);
         comboReintentos.setEnabled(true);
         comboTimeout.setEnabled(true);
-    }//GEN-LAST:event_jRadioButton1ActionPerformed
+    }//GEN-LAST:event_jrbSerialActionPerformed
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+    private void txPortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txPortActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
+    }//GEN-LAST:event_txPortActionPerformed
 
     private void comboPuertoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboPuertoActionPerformed
         // TODO add your handling code here:
@@ -640,18 +633,18 @@ public class Config extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JRadioButton jrbSerial;
+    private javax.swing.JRadioButton jrbTCP;
     private javax.swing.JTextField nroValores;
     private javax.swing.JTable tablaValores;
     private javax.swing.JTextField textDireccion;
     private javax.swing.JTextField textID;
     private javax.swing.JTextArea txAreaTraffic;
+    private javax.swing.JTextField txIP;
+    private javax.swing.JTextField txPort;
     // End of variables declaration//GEN-END:variables
 
     private JModbus modbus;
@@ -681,5 +674,25 @@ public class Config extends javax.swing.JFrame {
             defaultTableModel.addRow(new Object[]{i, 0});
         }
         return defaultTableModel;
+    }
+
+    private void initializeModbus(int nroVariables) {
+        /* Cierro la conexión si hay alguna existente */
+        if(this.modbus != null){
+            this.modbus.close();
+        }
+        /* Si la configuración es por puerto SERIE */
+        if(jrbSerial.isSelected()){            
+          this.modbus = new SerialJModbus(comboPuerto.getSelectedItem().toString(),
+                Integer.valueOf(comboRate.getSelectedItem().toString()),
+                Integer.valueOf(comboTimeout.getSelectedItem().toString()),
+                Integer.valueOf(comboReintentos.getSelectedItem().toString()), Integer.parseInt(textID.getText()),
+                Integer.valueOf(textDireccion.getText()), nroVariables,
+                Integer.valueOf(comboFuncion.getSelectedItem().toString()));  
+        }
+        
+        /* Si la configuración es por TCP */
+        if(jrbTCP.isSelected()){
+        }
     }
 }
