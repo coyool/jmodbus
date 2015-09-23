@@ -12,6 +12,7 @@ import javax.swing.table.TableModel;
 import jmodbus.JModbus;
 import jmodbus.PortConfiguration;
 import jmodbus.SerialJModbus;
+import jmodbus.TcpJModbus;
 
 /**
  *
@@ -683,16 +684,29 @@ public class Config extends javax.swing.JFrame {
         }
         /* Si la configuración es por puerto SERIE */
         if(jrbSerial.isSelected()){            
-          this.modbus = new SerialJModbus(comboPuerto.getSelectedItem().toString(),
+          this.modbus = new SerialJModbus(
+                comboPuerto.getSelectedItem().toString(),
                 Integer.valueOf(comboRate.getSelectedItem().toString()),
                 Integer.valueOf(comboTimeout.getSelectedItem().toString()),
-                Integer.valueOf(comboReintentos.getSelectedItem().toString()), Integer.parseInt(textID.getText()),
-                Integer.valueOf(textDireccion.getText()), nroVariables,
+                Integer.valueOf(comboReintentos.getSelectedItem().toString()), 
+                Integer.parseInt(textID.getText()),
+                Integer.valueOf(textDireccion.getText()), 
+                nroVariables,
                 Integer.valueOf(comboFuncion.getSelectedItem().toString()));  
         }
         
         /* Si la configuración es por TCP */
         if(jrbTCP.isSelected()){
+            this.modbus = new TcpJModbus(
+                this.txIP.getText(), 
+                Integer.parseInt(this.txPort.getText()),
+                Integer.valueOf(comboRate.getSelectedItem().toString()),
+                Integer.valueOf(comboTimeout.getSelectedItem().toString()),
+                Integer.valueOf(comboReintentos.getSelectedItem().toString()), 
+                Integer.parseInt(textID.getText()),
+                Integer.valueOf(textDireccion.getText()), 
+                nroVariables,
+                Integer.valueOf(comboFuncion.getSelectedItem().toString()));  
         }
     }
 }
