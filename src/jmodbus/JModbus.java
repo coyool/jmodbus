@@ -148,11 +148,10 @@ public abstract class JModbus {
                     response.add(parseUnsignedInt(bit));
                     control = false;
                 }
-                System.out.println(bit);
             }
 
             /* Lee la trama completa */
-            int frameIndex = 0;
+            int frameIndex = 1;
             int tcpFrameBytesIndex = -1;
             int tcpFrameBytes = -2;
             while (true) {
@@ -160,13 +159,12 @@ public abstract class JModbus {
                 if (filterInputStream != null) {
                     bit = filterInputStream.read();
                     byteInt = parseUnsignedInt(bit);
-                    if (frameIndex == 4) {
-                        System.out.println("Cantidad faltante: " + byteInt + " Indice " + frameIndex);
+                    if (frameIndex == 5) {
                         tcpFrameBytesIndex = 0;
                         tcpFrameBytes = byteInt;
                     }
                     if(tcpFrameBytes == tcpFrameBytesIndex){
-                        System.out.println(tcpFrameBytes + "::::" +tcpFrameBytes);
+                        response.add(byteInt);
                         break;
                     }
                     if(tcpFrameBytesIndex != -1) tcpFrameBytesIndex++;                    
@@ -179,7 +177,6 @@ public abstract class JModbus {
                     }
                 }    
                 response.add(byteInt);
-                System.out.println(byteInt);
             }
             /* Dejo registro de la trama que recibo */
             logFrame("Rx:", response);
