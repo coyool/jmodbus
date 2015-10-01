@@ -5,6 +5,7 @@
  */
 package jmodbus;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
@@ -57,6 +58,7 @@ public class TcpJModbus extends JModbus {
     protected void setInputStream() {
         try {
             inStream = this.tcpModbus.getInputStream();
+            filterInputStream = new BufferedInputStream(inStream);
         } catch (IOException ex) {
             Logger.getLogger(TcpJModbus.class.getName()).log(Level.SEVERE, null, ex);
         }
