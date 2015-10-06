@@ -8,6 +8,7 @@ package jmodbus;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,21 +34,24 @@ public class TcpJModbus extends JModbus {
     @Override
     protected List<Byte> addHeaderFrame(List<Byte> frame) {
         /* Transaction identifier (2 bytes)*/
-        frame.add((byte) (1));
-        frame.add((byte) (1));
+        List<Byte> trama = new ArrayList<>();
+        
+        trama.add((byte) (1));
+        trama.add((byte) (1));
         
         /* Protocol (1 bytes)*/
-        frame.add((byte) (0));
-        frame.add((byte) (0));
+        trama.add((byte) (0));
+        trama.add((byte) (0));
         
         /* Length*/
-        frame.add((byte) (0));
-        frame.add((byte) (6));
+        trama.add((byte) ((frame.size()+1) / 256));
+        trama.add((byte) ((frame.size()+1) % 256));
         
         /* Identificador de slave */
-        frame.add((byte) (this.deviseId));
+        trama.add((byte) (this.deviseId));
         
-        return frame;
+        trama.addAll(frame);
+        return trama;
     }
 
     @Override

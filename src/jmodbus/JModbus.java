@@ -207,9 +207,6 @@ public abstract class JModbus {
     private byte[] createFrameFunction3() {
         List<Byte> frame = new ArrayList<>();
 
-        /* #1: (N bytes) Encabezado de la trama */
-        frame = addHeaderFrame(frame);
-
         /* #2: (1 byte) numero de funcion 0..255 */
         frame.add(new Byte((byte) this.functionNumber));
 
@@ -221,6 +218,9 @@ public abstract class JModbus {
         frame.add(new Byte((byte) (this.tempNVar / 256)));
         frame.add(new Byte((byte) (this.tempNVar % 256)));
 
+        /* #1: (N bytes) Encabezado de la trama */
+        frame = addHeaderFrame(frame);
+        
         /* #5: (N bytes) Chequeo de error de la trama */
         frame = addErrorCheck(frame);
 
@@ -233,9 +233,6 @@ public abstract class JModbus {
     private byte[] createFrameFunction6(int valor) {
         List<Byte> frame = new ArrayList<>();
 
-        /* #1: (N bytes) Encabezado de la trama */
-        frame = addHeaderFrame(frame);
-
         /* #2: (1 byte) numero de funcion 0..255 */
         frame.add((byte) functionNumber);
 
@@ -247,6 +244,9 @@ public abstract class JModbus {
         frame.add((byte) (valor / 256));
         frame.add((byte) (valor % 256));
 
+        /* #1: (N bytes) Encabezado de la trama */
+        frame = addHeaderFrame(frame);
+        
         /* #5: (N bytes) Chequeo de error de la trama */
         frame = addErrorCheck(frame);
 
@@ -261,9 +261,6 @@ public abstract class JModbus {
         //Se debe calcular la cantidad de bytes que se envian en funcion de la cantidad de registros a escribir  (n reg x 2 bytes)
         /*El formato de la trama es: [id], [funcion], [address], [cantidad de registros], [cantidad de bytes], [valores], [CRC]*/
         List<Byte> frame = new ArrayList<>();
-
-        /* #1: (N bytes) Encabezado de la trama */
-        frame = addHeaderFrame(frame);
 
         /* #2: (1 byte) numero de funcion 0..255 */
         frame.add((byte) functionNumber);
@@ -284,7 +281,10 @@ public abstract class JModbus {
             frame.add((byte) (valor / 256));
             frame.add((byte) (valor % 256));
         }
-
+        
+        /* #1: (N bytes) Encabezado de la trama */
+        frame = addHeaderFrame(frame);
+ 
         /* #7: (N bytes) Chequeo de error de la trama */
         frame = addErrorCheck(frame);
 
