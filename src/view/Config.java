@@ -436,7 +436,7 @@ public class Config extends javax.swing.JFrame {
              
         for (int i = 0; i < tablaValores.getRowCount(); i++) {
             try {
-                int valor = Integer.valueOf((String) tablaValores.getValueAt(i, 1));
+                int valor = Integer.valueOf((String.valueOf(tablaValores.getValueAt(i, 1))));
                 if (valor > 65535) {
                     valorCorrecto = false;
                     break;

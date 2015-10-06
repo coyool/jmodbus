@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JTable;
 
 /**
  *
@@ -81,6 +82,36 @@ public class TcpJModbus extends JModbus {
             } catch (IOException ex) {
                 Logger.getLogger(TcpJModbus.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+    }
+
+    @Override
+    protected void toTableValues(JTable tableValues, List<Integer> response) {
+        int row = 0;
+        switch (this.functionNumber) {
+            case 3:
+                for (int i = 9; i < response.size(); i++) {
+                    if (i % 2 == 1) {
+                        String binary = Integer.toBinaryString(response.get(i)) + Integer.toBinaryString(response.get(i + 1));
+                        int unsignedVal = Integer.parseInt(binary, 2);
+                        tableValues.setValueAt(unsignedVal, row + this.tempAddress, 1);
+                        row++;
+                    }
+                }
+                break;
+            case 6:
+                for (int i = 10; i < (response.size() - 2); i++) {
+                    if (i % 2 == 0) {
+                        String binary = Integer.toBinaryString(response.get(i)) + Integer.toBinaryString(response.get(i + 1));
+                        int unsignedVal = Integer.parseInt(binary, 2);
+                        tableValues.setValueAt(unsignedVal, row, 1);
+                        row++;
+                    }
+                }
+                break;
+            case 16:
+                // Implementar
+                break;
         }
     }
     

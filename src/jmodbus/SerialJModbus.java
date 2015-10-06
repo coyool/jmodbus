@@ -12,6 +12,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JTable;
 
 /**
  *
@@ -76,6 +77,36 @@ public class SerialJModbus extends JModbus {
         if(this.serialPort != null){
             this.serialPort.close();
         } 
+    }
+
+    @Override
+    protected void toTableValues(JTable tableValues, List<Integer> response) {
+        int row = 0;
+        switch (this.functionNumber) {
+            case 3:
+                for (int i = 3; i < (response.size() - 2); i++) {
+                    if (i % 2 == 1) {
+                        String binary = Integer.toBinaryString(response.get(i)) + Integer.toBinaryString(response.get(i + 1));
+                        int unsignedVal = Integer.parseInt(binary, 2);
+                        tableValues.setValueAt(unsignedVal, row + this.tempAddress, 1);
+                        row++;
+                    }
+                }
+                break;
+            case 6:
+                for (int i = 4; i < (response.size() - 2); i++) {
+                    if (i % 2 == 0) {
+                        String binary = Integer.toBinaryString(response.get(i)) + Integer.toBinaryString(response.get(i + 1));
+                        int unsignedVal = Integer.parseInt(binary, 2);
+                        tableValues.setValueAt(unsignedVal, row, 1);
+                        row++;
+                    }
+                }
+                break;
+            case 16:
+                // Implementar
+                break;
+        }
     }
 
 }

@@ -337,6 +337,8 @@ public abstract class JModbus {
 
     protected abstract List<Byte> addErrorCheck(List<Byte> frame);
 
+    protected abstract void toTableValues(JTable tableValues, List<Integer> response);
+    
     protected abstract void setInputStream();
 
     protected abstract void setOutputStream();
@@ -386,35 +388,6 @@ public abstract class JModbus {
             default:
                 return "Error desconocido";
 
-        }
-    }
-
-    private void toTableValues(JTable tableValues, List<Integer> response) {
-        int row = 0;
-        switch (this.functionNumber) {
-            case 3:
-                for (int i = 3; i < (response.size() - 2); i++) {
-                    if (i % 2 == 1) {
-                        String binary = Integer.toBinaryString(response.get(i)) + Integer.toBinaryString(response.get(i + 1));
-                        int unsignedVal = Integer.parseInt(binary, 2);
-                        tableValues.setValueAt(unsignedVal, row + this.tempAddress, 1);
-                        row++;
-                    }
-                }
-                break;
-            case 6:
-                for (int i = 4; i < (response.size() - 2); i++) {
-                    if (i % 2 == 0) {
-                        String binary = Integer.toBinaryString(response.get(i)) + Integer.toBinaryString(response.get(i + 1));
-                        int unsignedVal = Integer.parseInt(binary, 2);
-                        tableValues.setValueAt(unsignedVal, row, 1);
-                        row++;
-                    }
-                }
-                break;
-            case 16:
-                // Implementar
-                break;
         }
     }
 }
