@@ -8,6 +8,7 @@ package jmodbus;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
@@ -43,8 +44,12 @@ public class SerialJModbus extends JModbus {
     @Override
     protected List<Byte> addHeaderFrame(List<Byte> frame) {
         /* #Encabezado: (1 byte) ID del dispositivo 0..255 */
-        frame.add((byte) (this.deviseId));
-        return frame;
+        List<Byte> trama = new ArrayList<>();
+        
+        trama.add((byte) (this.deviseId));
+        
+        trama.addAll(frame);
+        return trama;
     }
 
     @Override
